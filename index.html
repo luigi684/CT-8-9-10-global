@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hypothesis Testing Tool — Global Economics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="badge">GLOBAL ECONOMICS · 11TH GRADE · T3–LE4</div>
+      <h1>Hypothesis Testing Tool</h1>
+      <p class="subtitle">C8 Manual Mode &amp; C9 CSV Mode · Statistical Decision Engine</p>
+    </div>
+  </header>
+
+  <!-- TAB NAV -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="c8">
+      <span class="tab-label">C8</span> Manual Mode
+    </button>
+    <button class="tab-btn" data-tab="c9">
+      <span class="tab-label">C9</span> CSV Mode
+    </button>
+  </nav>
+
+  <!-- ============================================================
+       C8 — MANUAL MODE
+  ============================================================ -->
+  <section id="tab-c8" class="tab-panel active">
+    <div class="panel-grid">
+
+      <!-- LEFT: CONTROLS -->
+      <div class="controls-panel">
+        <h2 class="panel-title">Parameters</h2>
+
+        <!-- Mode -->
+        <div class="control-group">
+          <label class="ctrl-label">Test Mode</label>
+          <div class="btn-group" id="c8-mode">
+            <button class="mode-btn active" data-mode="mean">Mean (μ)</button>
+            <button class="mode-btn" data-mode="proportion">Proportion (p)</button>
+          </div>
+        </div>
+
+        <!-- Test Direction -->
+        <div class="control-group">
+          <label class="ctrl-label">Test Direction</label>
+          <div class="btn-group" id="c8-direction">
+            <button class="dir-btn active" data-dir="left">◀ Left</button>
+            <button class="dir-btn" data-dir="two">↔ Two</button>
+            <button class="dir-btn" data-dir="right">Right ▶</button>
+          </div>
+        </div>
+
+        <!-- Alpha -->
+        <div class="control-group">
+          <label class="ctrl-label">Significance Level α</label>
+          <div class="slider-row">
+            <input type="range" id="alpha-slider" min="0.01" max="0.15" step="0.01" value="0.05" />
+            <input type="number" id="alpha-input" min="0.01" max="0.15" step="0.01" value="0.05" />
+          </div>
+        </div>
+
+        <!-- MEAN MODE PARAMS -->
+        <div id="mean-params">
+          <div class="control-group">
+            <label class="ctrl-label">Benchmark Mean (μ₀)</label>
+            <div class="slider-row">
+              <input type="range" id="mu0-slider" min="0" max="200" step="1" value="70" />
+              <input type="number" id="mu0-input" min="0" max="200" step="0.1" value="70" />
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="ctrl-label">Sample Mean (x̄)</label>
+            <div class="slider-row">
+              <input type="range" id="xbar-slider" min="0" max="200" step="1" value="74" />
+              <input type="number" id="xbar-input" min="0" max="200" step="0.1" value="74" />
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="ctrl-label">Std Dev / Std Error (σ or SE)</label>
+            <div class="slider-row">
+              <input type="range" id="sigma-slider" min="0.1" max="50" step="0.1" value="8" />
+              <input type="number" id="sigma-input" min="0.1" max="50" step="0.1" value="8" />
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="ctrl-label">Sample Size (n)</label>
+            <div class="slider-row">
+              <input type="range" id="n-slider-mean" min="2" max="500" step="1" value="30" />
+              <input type="number" id="n-input-mean" min="2" max="500" step="1" value="30" />
+            </div>
+          </div>
+        </div>
+
+        <!-- PROPORTION MODE PARAMS -->
+        <div id="proportion-params" style="display:none">
+          <div class="control-group">
+            <label class="ctrl-label">Benchmark Proportion (p₀)</label>
+            <div class="slider-row">
+              <input type="range" id="p0-slider" min="0.01" max="0.99" step="0.01" value="0.50" />
+              <input type="number" id="p0-input" min="0.01" max="0.99" step="0.01" value="0.50" />
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="ctrl-label">Sample Proportion (p̂)</label>
+            <div class="slider-row">
+              <input type="range" id="phat-slider" min="0.01" max="0.99" step="0.01" value="0.60" />
+              <input type="number" id="phat-input" min="0.01" max="0.99" step="0.01" value="0.60" />
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="ctrl-label">Sample Size (n)</label>
+            <div class="slider-row">
+              <input type="range" id="n-slider-prop" min="10" max="1000" step="1" value="100" />
+              <input type="number" id="n-input-prop" min="10" max="1000" step="1" value="100" />
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /controls-panel -->
+
+      <!-- RIGHT: OUTPUT -->
+      <div class="output-panel">
+        <h2 class="panel-title">Results</h2>
+        <canvas id="c8-canvas" width="560" height="280"></canvas>
+        <div class="stats-grid" id="c8-stats">
+          <div class="stat-card"><span class="stat-label">Test Stat (z)</span><span class="stat-val" id="c8-z">—</span></div>
+          <div class="stat-card"><span class="stat-label">p-value</span><span class="stat-val" id="c8-pval">—</span></div>
+          <div class="stat-card"><span class="stat-label">Critical Value</span><span class="stat-val" id="c8-crit">—</span></div>
+          <div class="stat-card"><span class="stat-label">α</span><span class="stat-val" id="c8-alpha-disp">0.05</span></div>
+        </div>
+        <div class="decision-box" id="c8-decision">Run the test to see results.</div>
+        <div class="conclusion-box" id="c8-conclusion"></div>
+        <div class="error-box">
+          <h3>Type I &amp; Type II Errors in this context</h3>
+          <p id="c8-error-text">Set parameters above to see error interpretation.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       C9 — CSV MODE
+  ============================================================ -->
+  <section id="tab-c9" class="tab-panel">
+    <div class="panel-grid">
+
+      <!-- LEFT: UPLOAD & CONFIG -->
+      <div class="controls-panel">
+        <h2 class="panel-title">Upload &amp; Configure</h2>
+
+        <div class="control-group">
+          <label class="ctrl-label">Upload CSV File</label>
+          <label class="upload-btn" for="csv-file-input">
+            <span id="upload-label">📂  Choose CSV file…</span>
+            <input type="file" id="csv-file-input" accept=".csv" />
+          </label>
+        </div>
+
+        <div id="csv-config" style="display:none">
+          <div class="control-group">
+            <label class="ctrl-label">Group Column</label>
+            <select id="group-col-select"></select>
+          </div>
+          <div class="control-group">
+            <label class="ctrl-label">Value / Success Column</label>
+            <select id="value-col-select"></select>
+          </div>
+          <div class="control-group">
+            <label class="ctrl-label">Detected Test Type</label>
+            <div class="info-chip" id="detected-type">—</div>
+          </div>
+          <div class="control-group">
+            <label class="ctrl-label">Benchmark Group</label>
+            <select id="bench-group-select"></select>
+          </div>
+          <div class="control-group">
+            <label class="ctrl-label">Test Group</label>
+            <select id="test-group-select"></select>
+          </div>
+          <div class="control-group">
+            <label class="ctrl-label">Test Direction</label>
+            <div class="btn-group" id="c9-direction">
+              <button class="dir-btn active" data-dir="left">◀ Left</button>
+              <button class="dir-btn" data-dir="two">↔ Two</button>
+              <button class="dir-btn" data-dir="right">Right ▶</button>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="ctrl-label">Significance Level α</label>
+            <div class="slider-row">
+              <input type="range" id="c9-alpha-slider" min="0.01" max="0.15" step="0.01" value="0.05" />
+              <input type="number" id="c9-alpha-input" min="0.01" max="0.15" step="0.01" value="0.05" />
+            </div>
+          </div>
+          <button class="run-btn" id="run-csv-btn">Run Hypothesis Test</button>
+        </div>
+
+        <div id="csv-summary" class="csv-summary"></div>
+      </div>
+
+      <!-- RIGHT: OUTPUT -->
+      <div class="output-panel">
+        <h2 class="panel-title">Results</h2>
+        <canvas id="c9-canvas" width="560" height="280"></canvas>
+        <div class="stats-grid" id="c9-stats">
+          <div class="stat-card"><span class="stat-label">Test Stat (z)</span><span class="stat-val" id="c9-z">—</span></div>
+          <div class="stat-card"><span class="stat-label">p-value</span><span class="stat-val" id="c9-pval">—</span></div>
+          <div class="stat-card"><span class="stat-label">Critical Value</span><span class="stat-val" id="c9-crit">—</span></div>
+          <div class="stat-card"><span class="stat-label">α</span><span class="stat-val" id="c9-alpha-disp">—</span></div>
+        </div>
+        <div class="decision-box" id="c9-decision">Upload a CSV file to begin.</div>
+        <div class="conclusion-box" id="c9-conclusion"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>Global Economics · 11th Grade · Term 3 · Learning Evidence 4 · C8–C10</p>
+    <p><a href="#" id="gh-pages-link">🔗 View on GitHub Pages</a></p>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
